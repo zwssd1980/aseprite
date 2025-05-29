@@ -97,6 +97,7 @@ jobs:
 
         # 移动可执行文件和资源
         cp build/bin/aseprite build/Aseprite.app/Contents/MacOS/
+        chmod +x build/Aseprite.app/Contents/MacOS/aseprite
         cp -R build/bin/data build/Aseprite.app/Contents/Resources/
 
         # 创建 Info.plist
@@ -122,17 +123,20 @@ jobs:
         sips -z 128 128 data/icons/ase128.png --out icon.iconset/icon_128x128.png
         iconutil -c icns icon.iconset -o build/Aseprite.app/Contents/Resources/ase128.icns
 
+        mkdir dmg_folder
+        cp -R build/Aseprite.app dmg_folder/
+
         # 生成 .dmg
         create-dmg \
           --volname "Aseprite" \
           --volicon "build/Aseprite.app/Contents/Resources/ase128.icns" \
-          --window-size 500 300 \
-          --icon-size 100 \
-          --icon "Aseprite.app" 125 125 \
+          --window-size 800 600 \
+          --icon-size 128 \
+          --icon "Aseprite.app" 128 128 \
           --hide-extension "Aseprite.app" \
           --app-drop-link 375 125 \
           "build/Aseprite.dmg" \
-          "build"
+          "dmg_folder"
         
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
