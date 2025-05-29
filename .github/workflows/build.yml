@@ -72,10 +72,11 @@ jobs:
       shell: bash
       run: |
         cd build && ninja
-    - uses: actions/upload-artifact@v3
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
       with:
         name: aseprite-${{ runner.os }}-${{ matrix.scripting }}
         path: |
-          ${{ runner.os == 'Windows' && 'build/bin/aseprite.exe' || 'build/bin/aseprite' }}
-          build/bin/data/**
-          ${{ runner.os == 'Windows' && 'build/bin/*.dll' || 'build/bin/*.dylib' }}
+          build/bin/aseprite${{ runner.os == 'Windows' && '.exe' || '' }}
+          build/bin/data
+          build/bin/*${{ runner.os == 'Windows' && '.dll' || '.dylib' }}
