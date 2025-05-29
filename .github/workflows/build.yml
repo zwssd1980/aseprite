@@ -47,9 +47,9 @@ jobs:
         curl -L https://github.com/blueloveTH/aseprite/releases/download/v0.01/skia.zip --output skia.zip
         # 自动覆盖解压，不提示
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          7z x "$skia_file" -aoa -o"skia"
+          7z x skia.zip -aoa -o"skia"
         else
-          unzip -o "$skia_file" -d skia
+          unzip -o skia.zip -d skia
         fi
 
         cmake -S . -B build -G Ninja \
