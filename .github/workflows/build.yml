@@ -84,6 +84,56 @@ jobs:
       shell: bash
       run: |
         cd build && ninja
+
+    - name: Create DMG on macOS
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew install create-dmg
+
+        # 创建一个 macOS 应用包结构
+        mkdir -p build/Aseprite.app/Contents/MacOS
+        mkdir -p build/Aseprite.app/Contents/Resources
+
+        # 移动可执行文件和资源
+        cp build/bin/aseprite build/Aseprite.app/Contents/MacOS/
+        cp -R build/bin/data build/Aseprite.app/Contents/Resources/
+
+        # 创建 Info.plist
+        cat > build/Aseprite.app/Contents/Info.plist <<EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+          <key>CFBundleExecutable</key>
+          <string>aseprite</string>
+          <key>CFBundleIdentifier</key>
+          <string>org.aseprite.app</string>
+          <key>CFBundleName</key>
+          <string>Aseprite</string>
+          <key>CFBundleIconFile</key>
+          <string>ase128.icns</string>
+        </dict>
+        </plist>
+        EOF
+
+        # 转换 PNG 图标为 ICNS 格式
+        mkdir -p icon.iconset
+        sips -z 128 128 data/icons/ase128.png --out icon.iconset/icon_128x128.png
+        iconutil -c icns icon.iconset -o build/Aseprite.app/Contents/Resources/ase128.icns
+
+        # 生成 .dmg
+        create-dmg \
+          --volname "Aseprite" \
+          --volicon "build/Aseprite.app/Contents/Resources/ase128.icns" \
+          --window-size 500 300 \
+          --icon-size 100 \
+          --icon "Aseprite.app" 125 125 \
+          --hide-extension "Aseprite.app" \
+          --app-drop-link 375 125 \
+          "build/Aseprite.dmg" \
+          "build"
+        
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -92,3 +142,4 @@ jobs:
           build/bin/aseprite${{ runner.os == 'Windows' && '.exe' || '' }}
           build/bin/data
           build/bin/*${{ runner.os == 'Windows' && '.dll' || '.dylib' }}
+          ${{ runner.os == 'macOS' && 'build/Aseprite.dmg' || '' }}
