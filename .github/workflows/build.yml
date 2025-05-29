@@ -50,8 +50,8 @@ jobs:
           unzip -o skia.zip -d skia
         fi
 
-        # 打印当前目录的内容
-        ls -R
+        # 获取Skia库的绝对路径
+        export SKIA_ABSOLUTE_PATH=$(pwd)/skia
 
         cmake -S . -B build -G Ninja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
@@ -60,9 +60,9 @@ jobs:
           -DENABLE_SCRIPTING=$enable_scripting \
           -DENABLE_CCACHE=$enable_ccache \
           -DLAF_BACKEND=skia \
-          -DSKIA_DIR=./skia \
-          -DSKIA_LIBRARY=./skia/out/Release-x64/skia.lib \
-          -DSKIA_LIBRARY_DIR=./skia/out/Release-x64
+          -DSKIA_DIR=$SKIA_ABSOLUTE_PATH \
+          -DSKIA_LIBRARY=$SKIA_ABSOLUTE_PATH/out/Release-x64/skia.lib \
+          -DSKIA_LIBRARY_DIR=$SKIA_ABSOLUTE_PATH/out/Release-x64
     - name: Compiling
       shell: bash
       run: |
