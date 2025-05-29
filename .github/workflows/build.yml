@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, macos-latest]
         build_type: [Release]
         scripting: [lua, noscripts]
     steps:
@@ -42,11 +42,12 @@ jobs:
           export skia_arch=x64
         fi
 
-        curl -L -o skia.zip https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip
         # 自动覆盖解压，不提示
         if [[ "${{ runner.os }}" == "Windows" ]]; then
+          curl -L -o skia.zip https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip
           7z x skia.zip -aoa -o"skia"
         else
+          curl -L -o skia.zip https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-macOS-Release-arm64.zip
           unzip -o skia.zip -d skia
         fi
 
