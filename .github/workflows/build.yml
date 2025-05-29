@@ -46,24 +46,40 @@ jobs:
         if [[ "${{ runner.os }}" == "Windows" ]]; then
           curl -L -o skia.zip https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip
           7z x skia.zip -aoa -o"skia"
+
+          # 获取Skia库的绝对路径
+          export SKIA_ABSOLUTE_PATH=$(pwd)/skia
+  
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
+            -DENABLE_TESTS=ON \
+            -DENABLE_SCRIPTING=$enable_scripting \
+            -DENABLE_CCACHE=$enable_ccache \
+            -DLAF_BACKEND=skia \
+            -DSKIA_DIR=$SKIA_ABSOLUTE_PATH \
+            -DSKIA_LIBRARY=$SKIA_ABSOLUTE_PATH/out/Release-x64/skia.lib \
+            -DSKIA_LIBRARY_DIR=$SKIA_ABSOLUTE_PATH/out/Release-x64
         else
           curl -L -o skia.zip https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-macOS-Release-arm64.zip
           unzip -o skia.zip -d skia
+
+          # 获取Skia库的绝对路径
+          export SKIA_ABSOLUTE_PATH=$(pwd)/skia
+  
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
+            -DENABLE_TESTS=ON \
+            -DENABLE_SCRIPTING=$enable_scripting \
+            -DENABLE_CCACHE=$enable_ccache \
+            -DLAF_BACKEND=skia \
+            -DSKIA_DIR=$SKIA_ABSOLUTE_PATH \
+            -DSKIA_LIBRARY=$SKIA_ABSOLUTE_PATH/out/Release-arm64/libskia.a \
+            -DSKIA_LIBRARY_DIR=$SKIA_ABSOLUTE_PATH/out/Release-arm64
         fi
 
-        # 获取Skia库的绝对路径
-        export SKIA_ABSOLUTE_PATH=$(pwd)/skia
-
-        cmake -S . -B build -G Ninja \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
-          -DENABLE_TESTS=ON \
-          -DENABLE_SCRIPTING=$enable_scripting \
-          -DENABLE_CCACHE=$enable_ccache \
-          -DLAF_BACKEND=skia \
-          -DSKIA_DIR=$SKIA_ABSOLUTE_PATH \
-          -DSKIA_LIBRARY=$SKIA_ABSOLUTE_PATH/out/Release-x64/skia.lib \
-          -DSKIA_LIBRARY_DIR=$SKIA_ABSOLUTE_PATH/out/Release-x64
+        
     - name: Compiling
       shell: bash
       run: |
