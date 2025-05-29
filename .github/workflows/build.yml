@@ -56,7 +56,7 @@ jobs:
           -DENABLE_TESTS=ON \
           -DENABLE_SCRIPTING=$enable_scripting \
           -DENABLE_CCACHE=$enable_ccache \
-          -DLAF_BACKEND=./skia \
+          -DLAF_BACKEND=skia \
           -DSKIA_DIR=./skia \
           -DSKIA_LIBRARY=./skia/out/Release-x64/skia.lib \
           -DSKIA_LIBRARY_DIR=./skia/out/Release-x64
