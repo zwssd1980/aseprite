@@ -24,7 +24,7 @@ jobs:
         skia_url=$(source $this_dir/laf/misc/skia-url.sh | xargs)
         skia_file=$(basename $skia_url)
         curl --ssl-revoke-best-effort -L -o "$skia_file" "$skia_url"
-        7z x "$skia_file" -y -o"skia"
+        7z x skia.zip -aoa
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2.17
       if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
