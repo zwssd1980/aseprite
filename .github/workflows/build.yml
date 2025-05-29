@@ -8,29 +8,12 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest]
         build_type: [Release]
-        ui: [gui, cli]
         scripting: [lua, noscripts]
-        exclude:
-          - build_type: Debug
-            ui: gui
-          - build_type: RelWithDebInfo
-            ui: cli
-          - build_type: RelWithDebInfo
-            scripting: noscripts
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-    - name: Install Dependencies
-      if: runner.os == 'Linux'
-      shell: bash
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -y \
-          libpixman-1-dev libfreetype6-dev libharfbuzz-dev zlib1g-dev \
-          libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev
     - name: Install Skia
-      if: ${{ matrix.ui == 'gui' }}
       shell: bash
       run: |
         if [[ "${{ runner.os }}" == "Windows" ]] ; then
@@ -46,7 +29,7 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2.17
       if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
       with:
-        key: ${{ matrix.os }}-${{ matrix.ui }}-${{ matrix.scripting }}-${{ matrix.build_type }}
+        key: ${{ matrix.os }}-gui-${{ matrix.scripting }}-${{ matrix.build_type }}
     - uses: aseprite/get-ninja@main
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
@@ -59,11 +42,7 @@ jobs:
           export enable_ccache=on
         fi
 
-        if [[ "${{ matrix.ui }}" == "gui" ]] ; then
-          export laf_backend=skia
-        else
-          export laf_backend=none
-        fi
+        export laf_backend=skia
 
         if [[ "${{ matrix.scripting }}" == "lua" ]] ; then
           export enable_scripting=on
@@ -95,7 +74,8 @@ jobs:
         cd build && ninja
     - uses: actions/upload-artifact@v3
       with:
-        name: aseprite
+        name: aseprite-${{ runner.os }}-${{ matrix.scripting }}
         path: |
-          D:/a/aseprite/aseprite/build/bin/data
-          D:/a/aseprite/aseprite/build/bin/aseprite.exe
+          ${{ runner.os == 'Windows' && 'build/bin/aseprite.exe' || 'build/bin/aseprite' }}
+          build/bin/data/**
+          ${{ runner.os == 'Windows' && 'build/bin/*.dll' || 'build/bin/*.dylib' }}
