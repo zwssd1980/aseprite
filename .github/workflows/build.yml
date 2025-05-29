@@ -30,8 +30,6 @@ jobs:
           export enable_ccache=on
         fi
 
-        export laf_backend=skia
-
         if [[ "${{ matrix.scripting }}" == "lua" ]] ; then
           export enable_scripting=on
         else
@@ -58,9 +56,10 @@ jobs:
           -DENABLE_TESTS=ON \
           -DENABLE_SCRIPTING=$enable_scripting \
           -DENABLE_CCACHE=$enable_ccache \
-          -DLAF_BACKEND=$laf_backend \
-          -DSKIA_DIR=$(realpath skia) \
-          -DSKIA_LIBRARY_DIR=$(realpath skia/out/Release-$skia_arch)
+          -DLAF_BACKEND=skia \
+          -DSKIA_DIR=${{ github.workspace }}/skia \
+          -DSKIA_LIBRARY=${{ github.workspace }}/skia/out/Static/Release/x64/skia.lib \
+          -DSKIA_LIBRARY_DIR=${{ github.workspace }}/skia/out/Static/Release/x64
     - name: Compiling
       shell: bash
       run: |
