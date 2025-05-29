@@ -50,6 +50,9 @@ jobs:
           unzip -o skia.zip -d skia
         fi
 
+        # 打印当前目录的内容
+        ls -R
+
         cmake -S . -B build -G Ninja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
