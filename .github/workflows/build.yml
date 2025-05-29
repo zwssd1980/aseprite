@@ -142,4 +142,5 @@ jobs:
           build/bin/aseprite${{ runner.os == 'Windows' && '.exe' || '' }}
           build/bin/data
           build/bin/*${{ runner.os == 'Windows' && '.dll' || '.dylib' }}
-          ${{ runner.os == 'macOS' && 'build/Aseprite.dmg' || '' }}
+          build/Aseprite.dmg
+
